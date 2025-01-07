@@ -7,9 +7,12 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-
+import { Suspense } from "react";
 export default function LoginPage() {
   const router = useRouter();
+  //wrap useSearchParams in Suspense
+
+  
   const searchParams = useSearchParams();
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
