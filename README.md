@@ -1,36 +1,155 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Todo Application
 
-## Getting Started
+A full-stack Todo application built with Next.js, MongoDB, and NextAuth.js.
 
-First, run the development server:
+## Folder Structure
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+todo-app/
+├── app/                     # Next.js 13+ app directory
+│   ├── api/                # API routes
+│   │   ├── auth/          # Authentication endpoints
+│   │   └── tasks/         # Task management endpoints
+│   ├── auth/              # Auth-related pages
+│   ├── dashboard/         # Dashboard page
+│   └── edit/              # Task editing page
+├── components/            # Reusable React components
+│   ├── providers/        # Context providers
+│   ├── tasks/           # Task-related components
+│   └── ui/              # UI components
+├── lib/                  # Utility functions
+├── models/              # MongoDB models
+└── types/               # TypeScript type definitions
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/todo-app.git
+cd todo-app
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. Install dependencies:
+```bash
+npm install
+```
 
-## Learn More
+3. Set up environment variables in `.env.local`:
+```env
+MONGODB_URI=your_mongodb_connection_string
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_nextauth_secret
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+```
 
-To learn more about Next.js, take a look at the following resources:
+4. Run the development server:
+```bash
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Configuration
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### MongoDB Setup
+1. Create a MongoDB Atlas account
+2. Create a new cluster
+3. Get your connection string
+4. Add it to your `.env.local` file
 
-## Deploy on Vercel
+### Google OAuth Setup
+1. Go to Google Cloud Console
+2. Create a new project
+3. Enable OAuth2 and create credentials
+4. Add authorized origins and redirect URIs
+5. Add credentials to `.env.local`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Time Complexity Analysis
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Task Operations
+
+1. Task Addition (Create)
+   - Time Complexity: O(1)
+   - Space Complexity: O(1)
+   - Explanation: MongoDB's insertOne operation has constant time complexity as it simply appends to the collection.
+
+2. Task Deletion
+   - Time Complexity: O(1)
+   - Space Complexity: O(1)
+   - Explanation: MongoDB's findOneAndDelete with _id has constant time complexity due to index-based lookup.
+
+3. Task Update
+   - Time Complexity: O(1)
+   - Space Complexity: O(1)
+   - Explanation: MongoDB's findOneAndUpdate with _id has constant time complexity due to index-based lookup.
+
+4. Task Retrieval (List)
+   - Time Complexity: O(n) where n is the number of tasks for the user
+   - Space Complexity: O(n)
+   - Explanation: Fetching all tasks requires scanning through the user's tasks.
+
+### Authentication Operations
+
+1. User Registration
+   - Time Complexity: O(1)
+   - Space Complexity: O(1)
+   - Explanation: Email lookup and user creation are constant time operations due to email index.
+
+2. User Login
+   - Time Complexity: O(1)
+   - Space Complexity: O(1)
+   - Explanation: Email-based user lookup is a constant time operation.
+
+## Development Assumptions
+
+1. Database
+   - MongoDB is used as the primary database
+   - Indexes are created on user email and task IDs
+   - Assumed reasonable document sizes (< 16MB per document)
+
+2. Authentication
+   - Users primarily use Google OAuth or email/password
+   - Session tokens are stored as JWTs
+   - Passwords are hashed using bcrypt
+
+3. Performance
+   - Assumed reasonable number of tasks per user (< 1000)
+   - Database queries are optimized for small to medium datasets
+   - Client-side state management handles immediate updates
+
+4. Security
+   - All routes are protected except auth routes
+   - Users can only access their own tasks
+   - API routes validate session tokens
+
+5. UI/UX
+   - Application is responsive across devices
+   - Real-time updates without page refresh
+   - Optimistic updates for better user experience
+
+## Testing
+
+Run tests:
+```bash
+# Run all tests
+npm test
+
+# Run tests with watch mode
+npm run test:watch
+
+# Generate coverage report
+npm run test:coverage
+```
+
+## API Routes
+
+### Tasks
+- `GET /api/tasks` - Get all tasks for authenticated user
+- `POST /api/tasks` - Create new task
+- `PUT /api/tasks/[id]` - Update task
+- `DELETE /api/tasks/[id]` - Delete task
+
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `GET/POST /api/auth/[...nextauth]` - NextAuth.js authentication routes
+
